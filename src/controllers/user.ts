@@ -612,6 +612,7 @@ export default class UsersRest extends BaseRepository<User> {
           });
 
           if (info) {
+            console.log(info);
             console.log(" SendNewOTP>>>>>>>>>>", otp);
             req.result = {
               status: 200,

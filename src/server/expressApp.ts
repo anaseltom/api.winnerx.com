@@ -1,3 +1,4 @@
+require("dotenv");
 const cookieSession = require("cookie-session");
 const path = require("path");
 const express = require("express");
@@ -10,6 +11,9 @@ const shortId = require("shortid");
 const config = require("../config/config");
 const uploadController = require("./../controllers/upload");
 const { uploadFile } = require("../server/s3");
+const sid = process.env.TWILIO_SID;
+const auth_token = process.env.TWILIO_AUTH;
+const client = require("twilio")(sid, auth_token);
 
 const app = express();
 const templates_url = path.join(__dirname, "../templates/");
@@ -122,6 +126,34 @@ app.post(
   [DB.ConnectToDB],
   User.uploadProfileImage
 );
+app.post("/api/v1/phone/send-otp", async (req: any, res: any) => {
+  const { phone } = req.body;
+  if (!phone) return res.status(404).send({ msg: "Phone was not provided" });
+  client.verify.v2
+    .services("VA390aa10834183a898d6b63d46fff95e5")
+    .verifications.create({ to: phone, channel: "sms" })
+    .then((verification: any) =>
+      res.status(200).send({ msg: "OTP was sent successfully" })
+    )
+    .catch((error: any) => res.status(500).send({ msg: error }));
+});
+
+app.post("/api/v1/phone/verify-otp", async (req: any, res: any) => {
+  const { phone, code } = req.body;
+  if (!phone) return res.status(404).send({ msg: "Phone was not provided" });
+  if (!code) return res.status(404).send({ msg: "Code was not provided" });
+
+  client.verify.v2
+    .services("VA390aa10834183a898d6b63d46fff95e5")
+    .verificationChecks.create({ to: phone, code: code })
+    .then((verification_check: any) => {
+      if (verification_check.status == "approved")
+        return res.status(200).send({ msg: "OTP provided is valid" });
+
+      return res.status(400).send({ msg: "Wrong verification code" });
+    })
+    .catch((err: any) => res.status(500).send({ msg: err }));
+});
 
 app.post(
   "/upload/product/:id",
