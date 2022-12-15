@@ -239,7 +239,7 @@ export default class UsersRest extends BaseRepository<User> {
             (await this.create(req.body, "users"));
 
           if (result) {
-            await this.SendNewOTP(req, res);
+            // await this.SendNewOTP(req, res);
 
             // console.log("req?.result>>>>>>>>>>", req?.result);
 

@@ -126,6 +126,7 @@ app.post(
   [DB.ConnectToDB],
   User.uploadProfileImage
 );
+
 app.post("/api/v1/phone/send-otp", async (req: any, res: any) => {
   const { phone } = req.body;
   if (!phone) return res.status(404).send({ msg: "Phone was not provided" });
@@ -135,7 +136,11 @@ app.post("/api/v1/phone/send-otp", async (req: any, res: any) => {
     .then((verification: any) =>
       res.status(200).send({ msg: "OTP was sent successfully" })
     )
-    .catch((error: any) => res.status(500).send({ msg: error }));
+    .catch((error: any) =>
+      res
+        .status(500)
+        .send({ msg: "The phone number you have provided is invalid" })
+    );
 });
 
 app.post("/api/v1/phone/verify-otp", async (req: any, res: any) => {
