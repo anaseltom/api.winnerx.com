@@ -157,7 +157,9 @@ app.post("/api/v1/phone/verify-otp", async (req: any, res: any) => {
 
       return res.status(400).send({ msg: "Wrong verification code" });
     })
-    .catch((err: any) => res.status(500).send({ msg: err }));
+    .catch((err: any) =>
+      res.status(500).send({ msg: "OTP for phone number not sent" })
+    );
 });
 
 app.post(
