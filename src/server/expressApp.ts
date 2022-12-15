@@ -129,36 +129,46 @@ app.post(
 
 app.post("/api/v1/phone/send-otp", async (req: any, res: any) => {
   const { phone } = req.body;
-  if (!phone) return res.status(404).send({ msg: "Phone was not provided" });
+  if (!phone)
+    return res.status(404).send({ status: 404, msg: "Phone was not provided" });
   client.verify.v2
     .services("VA390aa10834183a898d6b63d46fff95e5")
     .verifications.create({ to: phone, channel: "sms" })
     .then((verification: any) =>
-      res.status(200).send({ msg: "OTP was sent successfully" })
+      res.status(200).send({ status: 200, msg: "OTP was sent successfully" })
     )
     .catch((error: any) =>
-      res
-        .status(500)
-        .send({ msg: "The phone number you have provided is invalid" })
+      res.status(500).send({
+        status: 500,
+        msg: "The phone number you have provided is invalid",
+      })
     );
 });
 
 app.post("/api/v1/phone/verify-otp", async (req: any, res: any) => {
   const { phone, code } = req.body;
-  if (!phone) return res.status(404).send({ msg: "Phone was not provided" });
-  if (!code) return res.status(404).send({ msg: "Code was not provided" });
+  if (!phone)
+    return res.status(404).send({ status: 404, msg: "Phone was not provided" });
+  if (!code)
+    return res.status(404).send({ status: 404, msg: "Code was not provided" });
 
   client.verify.v2
     .services("VA390aa10834183a898d6b63d46fff95e5")
     .verificationChecks.create({ to: phone, code: code })
     .then((verification_check: any) => {
       if (verification_check.status == "approved")
-        return res.status(200).send({ msg: "OTP provided is valid" });
+        return res
+          .status(200)
+          .send({ status: 200, msg: "OTP provided is valid" });
 
-      return res.status(400).send({ msg: "Wrong verification code" });
+      return res
+        .status(400)
+        .send({ status: 400, msg: "Wrong verification code" });
     })
     .catch((err: any) =>
-      res.status(500).send({ msg: "OTP for phone number not sent" })
+      res
+        .status(500)
+        .send({ status: 500, msg: "OTP for phone number not sent" })
     );
 });
 
