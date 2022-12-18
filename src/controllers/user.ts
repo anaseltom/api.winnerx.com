@@ -494,6 +494,59 @@ export default class UsersRest extends BaseRepository<User> {
     }
   };
 
+  checkUserByPhone = async (req: any, res: any) => {
+    try {
+      let { phone } = req.body;
+      this._db = req.db;
+
+      if (!phone)
+        return res.status(400).json({
+          status: 400,
+          creds: false,
+          msg: `Please provide phone number`,
+        });
+
+      const customer: any = await this.findOne(
+        {
+          // where: { email, password },
+          where: { phone_no: phone },
+        },
+        "customers"
+      );
+      console.log(customer?.dataValues);
+
+      if (!customer) {
+        return res.status(404).json({
+          status: 404,
+          msg: `User with given phone number not found.`,
+        });
+      }
+
+      const user: any = await this.findOne(
+        {
+          where: { id: customer?.user_id },
+        },
+        "users"
+      );
+      if (!user) {
+        return res.status(500).send({
+          status: 500,
+          msg: `Something went wrong`,
+        });
+      }
+      return res.status(200).send({
+        status: 200,
+        msg: `User was found.`,
+        user: { ...user?.dataValues, customer: customer?.dataValues },
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: 500,
+        msg: `Something went wrong ${error}`,
+      });
+    }
+  };
+
   LoginUser = async (req: any, res: any) => {
     try {
       let { email, password, billing = false, social_media = false } = req.body;
@@ -529,7 +582,7 @@ export default class UsersRest extends BaseRepository<User> {
 
         if (user !== null) {
           if (user?.email_status === "not_verified") {
-            return res.status(200).json({
+            return res.status(400).json({
               status: 500,
               msg:
                 "We sent you an email verification to your email, please read the instruction on how to verify your email.",
@@ -548,7 +601,7 @@ export default class UsersRest extends BaseRepository<User> {
             // customer
           });
         } else {
-          return res.status(200).json({
+          return res.status(400).json({
             status: 500,
             creds: false,
             msg: `Invalid Credentials, Wrong Email or Password. Please try again.`,
@@ -556,7 +609,7 @@ export default class UsersRest extends BaseRepository<User> {
         }
       } else {
         return res
-          .status(200)
+          .status(400)
           .json({ status: 500, msg: "Please add user detail to signin." });
       }
     } catch (err) {

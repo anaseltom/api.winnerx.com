@@ -104,7 +104,6 @@ export default class DealsRest extends BaseRepository<Deals> {
           include: [
             {
               model: this._db["deal_products"],
-              where: { status: "active" },
               include: [{ model: this._db["products"] }],
             },
           ],
