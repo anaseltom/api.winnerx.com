@@ -100,9 +100,13 @@ export default class ShippingAddressesRest extends BaseRepository<
       // console.log(" req.body>>>>", req.body);
       this._db = req.db;
 
-      const result = await this.updateOrCreate(req.body, "user_addresses", {
-        where: { id },
-      });
+      const result = await this.updateOrCreate(
+        { ...req.body, status },
+        "user_addresses",
+        {
+          where: { id },
+        }
+      );
 
       if (result) {
         const { newId } = result.item;
