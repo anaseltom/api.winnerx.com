@@ -14,6 +14,7 @@ export default class UserAddresses {
   state: string = "";
   postal_code: string = "";
   remarks: string = "";
+  address_type: string = "";
   map_url: string = "";
   status: string = "";
   modified_at: string = "";
@@ -35,6 +36,7 @@ export default class UserAddresses {
     state: string,
     postal_code: string,
     remarks: string,
+    address_type: string,
     map_url: string,
     status: string,
     modified_at: string,
@@ -55,6 +57,7 @@ export default class UserAddresses {
     this.state = state;
     this.postal_code = postal_code;
     this.remarks = remarks;
+    this.address_type = address_type;
     this.map_url = map_url;
     this.status = status;
     this.modified_at = modified_at;

@@ -21,6 +21,7 @@ export default (sequelize: any, DataTypes: any) => {
       state: DataTypes.STRING,
       postal_code: DataTypes.STRING,
       remarks: DataTypes.STRING,
+      address_type: DataTypes.STRING,
       map_url: DataTypes.STRING,
       status: DataTypes.STRING,
       modified_at: DataTypes.DATE,
