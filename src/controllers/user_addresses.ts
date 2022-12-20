@@ -77,7 +77,7 @@ export default class ShippingAddressesRest extends BaseRepository<
         res.status(200).json({
           status: 200,
           msg: `User address details fetched successfully.`,
-          shipping_addresses: user_addresses,
+          user_addresses,
         });
       } else {
         res.status(200).json({
@@ -95,22 +95,22 @@ export default class ShippingAddressesRest extends BaseRepository<
 
   UpdateUserAddress = async (req: any, res: any) => {
     try {
-      // const { id = 0 } = req.body;
+      const { id = 0, status = "active" } = req.body;
       const { customer_id } = req.body;
       // console.log(" req.body>>>>", req.body);
       this._db = req.db;
 
       const result = await this.updateOrCreate(req.body, "user_addresses", {
-        where: { customer_id },
+        where: { id },
       });
 
       if (result) {
-        const { id } = result.item;
+        const { newId } = result.item;
         return res.status(200).json({
           status: 200,
-          id,
+          id: newId,
           msg: `User address has been ${
-            id ? "created" : "updated"
+            id == 0 ? "created" : "updated"
           } successfully.`,
         });
       } else {
