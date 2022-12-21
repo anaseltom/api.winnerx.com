@@ -313,10 +313,9 @@ export default class OrdersRest extends BaseRepository<Orders> {
         "order_items"
       );
 
-      if (user_addresses?.new) {
-        console.log("HELLO");
+      if (user_addresses) {
         await this.updateOrCreate(user_addresses, "user_addresses", {
-          where: { id: user_addresses.id },
+          where: { id: user_addresses?.id || 0 },
         });
       }
 
