@@ -314,6 +314,10 @@ export default class OrdersRest extends BaseRepository<Orders> {
       );
 
       if (user_addresses) {
+        let id = 0;
+        if (user_addresses.id) {
+          id = user_addresses.id;
+        }
         await this.updateOrCreate(user_addresses, "user_addresses", {
           where: { id: user_addresses?.id || 0 },
         });
