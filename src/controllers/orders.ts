@@ -322,7 +322,11 @@ export default class OrdersRest extends BaseRepository<Orders> {
       }
 
       const result = await this.updateOrCreate(
-        { ...req.body, package_status: "Order Created" },
+        {
+          ...req.body,
+          package_status: "Order Created",
+          fulfillment_status: "fulfilled",
+        },
         "orders",
         {
           where: { id },
