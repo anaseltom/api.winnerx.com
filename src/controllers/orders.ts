@@ -321,25 +321,60 @@ export default class OrdersRest extends BaseRepository<Orders> {
         }
       }
 
-      items?.map(async (val: any) => {
-        const product: any = await this.findOne(
-          {
-            where: { id: val.product_id },
-          },
-          "products"
-        );
-        await this.updateByCondition(
-          { where: { id: val.product_id } },
-          {
-            units_in_stock: product.dataValues.units_in_stock -= val.quantity,
-          },
-          "products"
-        );
-      });
+      const result = await this.updateOrCreate(
+        { ...req.body, package_status: "Order Created" },
+        "orders",
+        {
+          where: { id },
+        }
+      );
 
-      const result = await this.updateOrCreate(req.body, "orders", {
-        where: { id },
-      });
+      if (result) {
+        items?.map(async (val: any) => {
+          const product: any = await this.findOne(
+            {
+              where: { id: val.product_id },
+            },
+            "products"
+          );
+          if (product) {
+            await this.updateByCondition(
+              { where: { id: val?.product_id } },
+              {
+                units_in_stock: product.dataValues.units_in_stock -=
+                  val.quantity,
+              },
+              "products"
+            );
+          }
+
+          const deal: any = await this.findOne(
+            {
+              where: {
+                product_id: product.dataValues.parent_id
+                  ? product.dataValues.parent_id
+                  : product.dataValues.id,
+                deal_id: val.deal_id,
+              },
+            },
+            "deal_products"
+          );
+          if (deal) {
+            await this.updateByCondition(
+              {
+                where: {
+                  deal_id: val.deal_id,
+                  product_id: deal.dataValues.product_id,
+                },
+              },
+              {
+                quantity_sold: deal.dataValues.quantity_sold -= val.quantity,
+              },
+              "deal_products"
+            );
+          }
+        });
+      }
 
       let order_id: number = id;
       if (id === 0) {
@@ -348,7 +383,7 @@ export default class OrdersRest extends BaseRepository<Orders> {
 
       await this.updateByCondition(
         { where: { order_id } },
-        { status: "deleted" },
+        { package_status: "Order " },
         "order_items"
       );
 
