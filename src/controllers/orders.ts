@@ -368,7 +368,7 @@ export default class OrdersRest extends BaseRepository<Orders> {
                 },
               },
               {
-                quantity_sold: deal.dataValues.quantity_sold -= val.quantity,
+                quantity_sold: deal.dataValues.quantity_sold += val.quantity,
               },
               "deal_products"
             );
