@@ -236,6 +236,44 @@ export default class OrdersRest extends BaseRepository<Orders> {
     }
   };
 
+  updateOrderState = async (req: any, res: any) => {
+    try {
+      this._db = req.db;
+      const { id, package_status, customer_id } = req.body;
+      if (id && package_status) {
+        const orderByRefrence = await this.findOne(
+          {
+            where: { id },
+          },
+          "orders"
+        );
+        if (orderByRefrence) {
+          try {
+            await this.updateByCondition(
+              { where: { id } },
+              { package_status },
+              "orders"
+            );
+            return res
+              .status(200)
+              .send({ status: 200, msg: "Order status updated successfully" });
+          } catch (err) {
+            return res
+              .status(200)
+              .send({ status: 500, msg: "Something went wrong" });
+          }
+        }
+        return res
+          .status(200)
+          .send({ status: 404, msg: "Order with given id not found" });
+      }
+    } catch (err) {
+      return res
+        .status(200)
+        .send({ status: 500, msg: "Something went wrong" + err });
+    }
+  };
+
   UpdateOrder = async (req: any, res: any) => {
     try {
       const {
@@ -258,6 +296,7 @@ export default class OrdersRest extends BaseRepository<Orders> {
           },
           "orders"
         );
+        console.log(orderByRefrence);
         if (orderByRefrence) {
           return res.status(401).send({ msg: "refrence already exists" });
         }
