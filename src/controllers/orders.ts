@@ -324,14 +324,19 @@ export default class OrdersRest extends BaseRepository<Orders> {
       }
 
       if (shipping_address) {
-        shipping_address.order_id = order_id;
+        // shipping_address.order_id = order_id;
         // shipping_address.customer_id = user_id;
-        shipping_address.customer_id = customer_id;
-
+        // shipping_address.customer_id = customer_id;
+        // console.log("hello", shipping_address.order_id);
+        // console.log("hi", shipping_address.customer_id);
         // await this.updateByCondition({ where: { order_id } }, shipping_address, "shipping_addresses");
-        await this.updateOrCreate(shipping_address, "shipping_addresses", {
-          where: { order_id },
-        });
+        await this.updateOrCreate(
+          { ...shipping_address, id: 0, order_id },
+          "shipping_addresses",
+          {
+            where: { id: 0 },
+          }
+        );
       }
       // if (items) {
 
