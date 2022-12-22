@@ -68,11 +68,9 @@ export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
     const foundItem = await this.findOne(condition, tableName);
     if (!foundItem) {
       const item = await this._db[tableName].create(newItem);
-      console.log("not found", tableName);
       return { item, created: true };
     }
     const item = await this._db[tableName].update(newItem, condition);
-    console.log("found", tableName);
     return { item, created: false };
   }
 }
